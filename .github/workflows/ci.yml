@@ -7,23 +7,38 @@ on:
     branches: [main]
 
 jobs:
-  lint:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check foundry.toml exists
-        run: |
-          if [ ! -f foundry.toml ]; then
-            echo "foundry.toml not found"
-            exit 1
-          fi
-          echo "✓ foundry.toml exists"
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
-      - name: Check contract source exists
+      - name: Install dependencies
         run: |
-          if [ ! -f src/OpenChainBenchAttestations.sol ]; then
-            echo "Contract source not found"
+          forge install OpenZeppelin/openzeppelin-contracts --no-commit
+          forge install foundry-rs/forge-std --no-commit
+
+      - name: Build
+        run: forge build --sizes
+
+      - name: Run tests
+        run: forge test -vvv --gas-report
+
+      - name: Check formatting
+        run: forge fmt --check
+
+      - name: Verify artifacts
+        run: |
+          if [ ! -f out/OpenChainBenchAttestations.sol/OpenChainBenchAttestations.json ]; then
+            echo "Contract artifact not generated"
             exit 1
           fi
-          echo "✓ Contract source exists"
+          if [ ! -f out/OpenChainBenchAttestations.sol/OpenChainBenchAttestations.abi.json ]; then
+            echo "ABI not generated"
+            exit 1
+          fi
+          echo "All artifacts generated successfully"
