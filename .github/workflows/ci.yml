@@ -11,11 +11,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
+
+      - name: Cache Foundry dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.foundry
+            ~/.forge
+          key: ${{ runner.os }}-foundry-${{ hashFiles('foundry.toml', 'remappings.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-foundry-
+
+      - name: Cache Solidity artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            cache
+            out
+          key: ${{ runner.os }}-solidity-${{ hashFiles('src/**/*.sol', 'test/**/*.sol') }}
+          restore-keys: |
+            ${{ runner.os }}-solidity-
 
       - name: Install dependencies
         run: |
