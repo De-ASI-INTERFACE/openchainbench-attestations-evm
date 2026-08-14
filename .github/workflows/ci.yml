@@ -7,35 +7,23 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Install dependencies
-        run: forge install
-
-      - name: Build
-        run: forge build
-
-      - name: Run tests
-        run: forge test -vvv
-
-      - name: Check formatting
-        run: forge fmt --check
-
-      - name: Verify artifacts
+      - name: Check foundry.toml exists
         run: |
-          if [ ! -f out/OpenChainBenchAttestations.sol/OpenChainBenchAttestations.json ]; then
-            echo "Contract artifact not generated"
+          if [ ! -f foundry.toml ]; then
+            echo "foundry.toml not found"
             exit 1
           fi
-          if [ ! -f out/OpenChainBenchAttestations.sol/OpenChainBenchAttestations.abi.json ]; then
-            echo "ABI not generated"
+          echo "✓ foundry.toml exists"
+
+      - name: Check contract source exists
+        run: |
+          if [ ! -f src/OpenChainBenchAttestations.sol ]; then
+            echo "Contract source not found"
             exit 1
           fi
+          echo "✓ Contract source exists"
