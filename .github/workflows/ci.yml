@@ -28,3 +28,14 @@ jobs:
 
       - name: Check formatting
         run: forge fmt --check
+
+      - name: Verify artifacts
+        run: |
+          if [ ! -f out/OpenChainBenchAttestations.sol/OpenChainBenchAttestations.json ]; then
+            echo "Contract artifact not generated"
+            exit 1
+          fi
+          if [ ! -f out/OpenChainBenchAttestations.sol/OpenChainBenchAttestations.abi.json ]; then
+            echo "ABI not generated"
+            exit 1
+          fi
