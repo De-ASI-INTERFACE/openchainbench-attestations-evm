@@ -1,0 +1,21 @@
+# Foundry
+out/
+cache/
+
+# Dependencies
+lib/
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
